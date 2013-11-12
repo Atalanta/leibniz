@@ -86,8 +86,13 @@ Background:
 ```
 
 These two steps can be satisfied by using Leibniz.  First, add Leibniz
-to your Gemfile, and run `bundle install`.  Now create your step
-definitions:
+to your Gemfile, and run `bundle install`.  Now create a `support` directory under your `features` directory, and within the `support` directory, create an `env.rb` file.  This should read:
+
+```
+require 'leibniz'
+```
+
+Now create your step definitions:
 
 ```
 mkdir features/step_definitions
@@ -107,6 +112,16 @@ Given(/^I have run Chef$/) do
 end
 ```
 
+At present, Leibniz only knows how to provision infrastructure using
+the Vagrant driver.  By default this will assume you have Virtualbox
+on the system where you are runing Cucumber.  A top priority is to
+support other Kitchen drivers, which will enable infrastructure to be
+provisioned on cloud platforms, via LXC or Docker, or just with
+Vagrant.
+
+Once you have your feature, env.rb and steps in place, you can run
+`cucumber`.  This will build the infratructure you described using
+Chef.
 
 ## Contributing
 
