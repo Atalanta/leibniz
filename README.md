@@ -123,6 +123,34 @@ Once you have your feature, env.rb and steps in place, you can run
 `cucumber`.  This will build the infratructure you described using
 Chef.
 
+You may find it useful to tail the logs during this process:
+
+```
+tail -f .kitchen/logs/leibniz-generic-webpage.log
+```
+
+If all goes well, you should see something like:
+
+```
+Feature: Serve a generic webpage
+
+  In order to demonstrate how Leibniz works
+  As an infratructure developer
+  I want to be able to serve a generic webpage and test it
+
+  Background:                                              # features/crap_webpage.feature:7
+    Given I have provisioned the following infrastructure: # features/step_definitions/generic_webpage_steps.rb:1
+      | Server Name     | Operating System | Version | Chef Version | Run List                 |
+      | generic_webpage | ubuntu           | 12.04   | 11.8.0       | generic_webpage::default |
+Using generic_webpage (0.1.0) from metadata
+Using lighttpd (0.1.0)
+    And I have run Chef                                    # features/step_definitions/generic_webpage_steps.rb:5
+
+0 scenarios
+2 steps (2 passed)
+0m58.613s
+```
+
 ## Contributing
 
 1. Fork it
