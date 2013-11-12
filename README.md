@@ -1,6 +1,9 @@
 # Leibniz
 
-Leibniz is an integration testing tool aimed at the Chef community.
+Leibniz is simple utility which provides the ability to launch
+infrastructure using Test Kitchen, and run acceptance tests against
+that infrastructure.  It is designed to be used as part of a set of
+Cucumber / Gherkin features.
 
 ## Installation
 
@@ -18,7 +21,58 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+### Getting Started
+
+Leibniz takes the view that acceptance testing of infrastructure
+should be performed from the outside in, and make assertions from the
+perspective of an external user consuming the delivered
+infrastructure.
+
+To get started, you will need to write some features and some steps.
+Depending on how you build your infrastructure (at present the assumed
+approach is Berkshelf and wrapper cookbooks, but there's no reason why
+it wouldn't work with Librarian-chef, or some other approach).
+
+#### Using Berkshelf
+
+Assuming you have Berkshelf installed, you can use the in-built
+cookbook generator to create your wrapper cookbook.  The alternative
+is to create a cookbook directory, or use knife to create a cookbook,
+and then add 'berkshelf' to a Gemfile, and run bundle install, followed by berks init.
+
+Either way, once you have a cookbook which has been 'berksified' you
+will have something that looks like this:
+
+```
+.
+├── Berksfile
+├── Gemfile
+├── LICENSE
+├── README.md
+├── Thorfile
+├── Vagrantfile
+├── attributes
+├── chefignore
+├── definitions
+├── files
+│   └── default
+├── libraries
+├── metadata.rb
+├── providers
+├── recipes
+│   └── default.rb
+├── resources
+└── templates
+    └── default
+```
+
+Then
+
+```
+mkdir features
+cd features
+vi crap_webpage.feature
+```
 
 ## Contributing
 
