@@ -34,11 +34,278 @@
           <h3>
 <a name="welcome-to-leibniz" class="anchor" href="#welcome-to-leibniz"><span class="octicon octicon-link"></span></a>Welcome to Leibniz</h3>
 
-<p>Leibniz is a library of classes, methods, matchers and expectations to make it easier to write acceptance tests for infrastructure and configuration management.</p>
+
+
+
+<p>Leibniz is simple utility which provides the ability to launch
+infrastructure using Test Kitchen, and run acceptance tests against
+that infrastructure.  It is designed to be used as part of a set of
+Cucumber / Gherkin features.</p>
 
 <p>Although principally used in the context of Cucumber and Chef, the vision for Leibniz is to be the standard library used by anyone wanting to perform acceptance testing against infrastructure.</p>
 
 <p>Leibniz is named after the 17th century mathematician, commonly agreed to be one of the founding fathers of integral calculus.</p>
+
+<h2>Installation</h2>
+
+<p>Add this line to your application's Gemfile:</p>
+
+<pre><code>gem 'leibniz'
+</code></pre>
+
+<p>And then execute:</p>
+
+<pre><code>$ bundle
+</code></pre>
+
+<p>Or install it yourself as:</p>
+
+<pre><code>$ gem install leibniz
+</code></pre>
+
+<h2>Usage</h2>
+
+<h3>Getting Started</h3>
+
+<p>Leibniz takes the view that acceptance testing of infrastructure
+should be performed from the outside in, and make assertions from the
+perspective of an external user consuming the delivered
+infrastructure.</p>
+
+<p>To get started, you will need to write some features and some steps.
+Depending on how you build your infrastructure (at present the assumed
+approach is Berkshelf and wrapper cookbooks, but there's no reason why
+it wouldn't work with Librarian-chef, or some other approach).</p>
+
+<h4>Using Berkshelf</h4>
+
+<p>Assuming you have Berkshelf installed, you can use the in-built
+cookbook generator to create your wrapper cookbook.  The alternative
+is to create a cookbook directory, or use knife to create a cookbook,
+and then add 'berkshelf' to a Gemfile, and run bundle install, followed by berks init.</p>
+
+<p>Either way, once you have a cookbook which has been 'berksified' you
+will have something that looks like this:</p>
+
+<pre><code>.
+├── Berksfile
+├── Gemfile
+├── LICENSE
+├── README.md
+├── Thorfile
+├── Vagrantfile
+├── attributes
+├── chefignore
+├── definitions
+├── files
+│   └── default
+├── libraries
+├── metadata.rb
+├── providers
+├── recipes
+│   └── default.rb
+├── resources
+└── templates
+    └── default
+</code></pre>
+
+<h4>Writing your first feature</h4>
+
+<p>We are going to take you through the process of iterating on the creation of a feature and its step definitions. In reality you might merge some of these steps together and not run cucumber as often as we do here, but this illustrates every step in the process.</p>
+
+<p>First we need to create a directory to contain our features, then write our first feature:</p>
+
+<pre><code>mkdir features
+cd features
+vi generic_webpage.feature
+</code></pre>
+
+<p>The feature you write needs to have a <code>Background</code> section like this:</p>
+
+<pre><code>Background:
+
+  Given I have provisioned the following infrastructure:
+  | Server Name     | Operating System | Version | Chef Version | Run List                 |
+  | generic_webpage | ubuntu           |   12.04 |       11.8.0 | generic_webpage::default |
+  And I have run Chef
+</code></pre>
+
+<p>This background section is responsible for provisioning infrastructure and getting it into a state whereupon we can run some acceptance tests against it.  The title of each column is defined by Leibiniz:</p>
+
+<ul>
+<li><code>Server Name</code>  - this is the name of the machine you will be provisioning.  Leibniz will prepend <code>leibniz</code> to the name and will launch a machine with this name.</li>
+<li><code>Operating System</code> - this translates to the base OS of a Vagrant box which is downloaded on demand.  The boxes used are Opscode's 'Bento' boxes, and have nothing other than a base OS installed.  At present <code>ubuntu</code>, <code>debian</code>, <code>centos</code> and <code>fedora</code> are supported.</li>
+<li><code>Version</code> - this is version of the Operating System.  See the Bento website for an up-to-date specification of the available versions.</li>
+<li><code>Chef Version</code> - this is the version of the Chef 'client' software to be installed.</li>
+<li><code>Run List</code> - this is the Chef run list which will be used when the node is converged.</li>
+</ul>
+
+
+<p>These two steps are satisfied by Leibniz.  We need to ensure the Leibniz library is available to Chef.  To do this, add <code>leibniz</code> to your Gemfile, and run <code>bundle install</code>.  Then create a <code>support</code> directory under your <code>features</code> directory, and within the <code>support</code> directory, create an <code>env.rb</code> file.  This should read:</p>
+
+<pre><code>require 'leibniz'
+</code></pre>
+
+<p>Now create your step definitions:</p>
+
+<pre><code>mkdir features/step_definitions
+vi features/step_definitions/generic_webpage_steps.rb
+</code></pre>
+
+<p>The following steps will build and converge the infrastructure described in the table:</p>
+
+<pre><code>Given(/^I have provisioned the following infrastructure:$/) do |specification|
+  @infrastructure = Leibniz.build(specification)
+end
+
+Given(/^I have run Chef$/) do
+  @infrastructure.destroy
+  @infrastructure.converge
+end
+</code></pre>
+
+<p>At present, Leibniz only knows how to provision infrastructure using
+the Vagrant driver.  By default this will assume you have Virtualbox
+on the system where you are running Cucumber.  A top priority is to
+support other Kitchen drivers, which will enable infrastructure to be
+provisioned on cloud platforms, via LXC or Docker, or just with
+Vagrant.</p>
+
+<p>Once you have your feature, env.rb and steps in place, you can run
+<code>cucumber</code>.  This will build the infrastructure you described using
+Chef.</p>
+
+<p>You may find it useful to tail the logs during this process:</p>
+
+<pre><code>tail -f .kitchen/logs/leibniz-generic-webpage.log
+</code></pre>
+
+<p>If all goes well, you should see something like:</p>
+
+<pre><code>Feature: Serve a generic webpage
+
+  In order to demonstrate how Leibniz works
+  As an infrastructure developer
+  I want to be able to serve a generic webpage and test it
+
+  Background:                                              # features/crap_webpage.feature:7
+    Given I have provisioned the following infrastructure: # features/step_definitions/generic_webpage_steps.rb:1
+      | Server Name     | Operating System | Version | Chef Version | Run List                 |
+      | generic_webpage | ubuntu           | 12.04   | 11.8.0       | generic_webpage::default |
+Using generic_webpage (0.1.0) from metadata
+    And I have run Chef                                    # features/step_definitions/generic_webpage_steps.rb:5
+
+0 scenarios
+2 steps (2 passed)
+0m58.613s
+</code></pre>
+
+<p>At this stage we have only provisioned the machine per the table we provided in the feature.  We now need to describe an example of what the infrastructure does.  Open the feature and add an example:</p>
+
+<pre><code>  Scenario: Infrastructure developer can see generic webpage
+    Given a URL "http://generic-webpage.com"
+    When I browse to the URL
+    Then I should see "This is a generic webpage"
+</code></pre>
+
+<p>When we run cucumber again, we should be told that our steps are undefined. Cucumber will suggest some snippets we can use:</p>
+
+<pre><code>You can implement step definitions for undefined steps with these snippets:
+
+Given(/^a URL "(.*?)"$/) do |arg1|
+  pending # express the regexp above with the code you wish you had
+end
+
+When(/^I browse to the URL$/) do
+  pending # express the regexp above with the code you wish you had
+end
+
+Then(/^I should see "(.*?)"$/) do |arg1|
+  pending # express the regexp above with the code you wish you had
+end
+</code></pre>
+
+<p>Copy and paste these into <code>features/step_definitions/generic_webpage_steps.rb</code>, then run cucumber again.  We should now see that the step runs, but is marked as pending - that is we haven't implemented the acceptance test.</p>
+
+<p>The idea of Leibniz is to make the provisioning and converging of infrastructure nodes as painless and flexible as possible, enabling the infrastructure developer to dive into writing the acceptance tests right away.  Future versions of the library may ship some useful features to help with common acceptance test types.</p>
+
+<p>We now need to write the implementation of our acceptance tests:</p>
+
+<ul>
+<li>Given a URL "http://generic-webpage.com"</li>
+<li>When I browse to the URL</li>
+<li>Then I should see "This is a generic webpage"</li>
+</ul>
+
+
+<p>The first step simply requires us to capture a host header that we can use as part of an http client:</p>
+
+<pre><code>Given(/^a URL "(.*?)"$/) do |url|
+  @host_header = url.split("/").last
+end
+</code></pre>
+
+<p>The second step requires us to use an http client. There are many options available for this, Faraday is a simple one:</p>
+
+<pre><code>When(/^I browse to the URL$/) do
+  connection = Faraday.new(url: "http://#{@infrastructure['generic-webpage'].ip}", headers: { 'Host' =&gt; @host_header }) do |faraday|
+    faraday.adapter Faraday.default_adapter
+  end
+  @page = connection.get('/').body
+end
+</code></pre>
+
+<p>Note: the ip of the infrastructure we have built is available as part of the @infrastructure object returned by Leibniz.</p>
+
+<p>The final step is a simple rspec expectation:</p>
+
+<pre><code>Then(/^I should see "(.*?)"$/) do |content|
+  expect (@page).to match /#{content}/
+end
+</code></pre>
+
+<p>When we run cucumber this time, the tests will fail because we've not implemented anything to actually serve a website, nor have we deployed the website for the web server to serve.</p>
+
+<p>Making the tests pass (i.e. writing the Chef code to deploy a web server and serve a static web page) is left as an exercise for the reader. One the code is written, running cucumber again will converge the node and run the acceptance tests, resulting in the tests passing, like this:</p>
+
+<pre><code>Feature: Serve a generic webpage
+
+  In order to demonstrate how Leibniz works
+  As an infrastructure developer
+  I want to be able to serve a generic webpage and test it
+
+  Background:                                              # features/generic_webpage.feature:7
+    Given I have provisioned the following infrastructure: # features/step_definitions/generic_webpage_steps.rb:3
+      | Server Name     | Operating System | Version | Chef Version | Run List                 |
+      | generic_webpage | ubuntu           | 12.04   | 11.8.0       | generic_webpage::default |
+Using generic_webpage (0.1.0)
+Using apt (2.3.0)
+Using apache2 (1.8.4)
+    And I have run Chef                                    # features/step_definitions/generic_webpage_steps.rb:7
+
+  Scenario: Infrastructure developer can see generic webpage # features/generic_webpage.feature:14
+    Given a URL "http://generic-webpage.com"                 # features/step_definitions/generic_webpage_steps.rb:12
+    When I browse to the URL                                 # features/step_definitions/generic_webpage_steps.rb:16
+    Then I should see "This is a generic webpage"            # features/step_definitions/generic_webpage_steps.rb:23
+
+1 scenario (1 passed)
+5 steps (5 passed)
+1m25.227s
+</code></pre>
+
+<h2>Contributing</h2>
+
+<ol>
+<li>Fork it</li>
+<li>Create your feature branch (<code>git checkout -b my-new-feature</code>)</li>
+<li>Commit your changes (<code>git commit -am 'Add some feature'</code>)</li>
+<li>Push to the branch (<code>git push origin my-new-feature</code>)</li>
+<li>Create new Pull Request</li>
+</ol>
+
+</body>
+</html>
+
         </section>
 
         <footer>
