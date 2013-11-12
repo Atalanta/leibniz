@@ -71,8 +71,20 @@ Then
 ```
 mkdir features
 cd features
-vi crap_webpage.feature
+vi generic_webpage.feature
 ```
+
+The feature you write needs to have a `Background` section like this:
+
+```
+Background:
+
+  Given I have provisioned the following infrastructure:
+  | Server Name     | Operating System | Version | Chef Version | Run List                 |
+  | generic_webpage | ubuntu           |   12.04 |       11.8.0 | generic_webpage::default |
+  And I have run Chef
+```
+
 
 ## Contributing
 
