@@ -43,3 +43,7 @@ whereas what I *should* care about would be more like
 Now of course this sort of stuff is tested in the apps themselves so maybe I'm looking at this from the wrong end, or maybe others are already doing this with cuke-chef and and I'm just Doing It Wrong.
 
 But this, combined with the *Test configuration per-project* idea from above, would maybe let us test the entire stack from base OS to working app, which has a certain appeal.
+
+# Annoyances with current cucumber-chef
+
+* Occasional failure of packet-passing
