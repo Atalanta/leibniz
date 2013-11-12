@@ -85,6 +85,28 @@ Background:
   And I have run Chef
 ```
 
+These two steps can be satisfied by using Leibniz.  First, add Leibniz
+to your Gemfile, and run `bundle install`.  Now create your step
+definitions:
+
+```
+mkdir features/step_definitions
+vi generic_webpage_steps.rb
+``` 
+
+The following steps will build and converge the infrastructure described in the table:
+
+```
+Given(/^I have provisioned the following infrastructure:$/) do |specification|
+  @infrastructure = Leibniz.build(specification)
+end
+
+Given(/^I have run Chef$/) do
+  @infrastructure.destroy
+  @infrastructure.converge
+end
+```
+
 
 ## Contributing
 
