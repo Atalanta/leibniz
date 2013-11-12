@@ -96,7 +96,7 @@ Now create your step definitions:
 
 ```
 mkdir features/step_definitions
-vi generic_webpage_steps.rb
+vi features/step_definitions/generic_webpage_steps.rb
 ``` 
 
 The following steps will build and converge the infrastructure described in the table:
