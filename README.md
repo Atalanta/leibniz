@@ -143,13 +143,16 @@ Feature: Serve a generic webpage
       | Server Name     | Operating System | Version | Chef Version | Run List                 |
       | generic_webpage | ubuntu           | 12.04   | 11.8.0       | generic_webpage::default |
 Using generic_webpage (0.1.0) from metadata
-Using lighttpd (0.1.0)
     And I have run Chef                                    # features/step_definitions/generic_webpage_steps.rb:5
 
 0 scenarios
 2 steps (2 passed)
 0m58.613s
 ```
+
+At this stage we have only provisioned the machine per the table we provided in the feature.  We now need to describe an example of what the infrastructure does.  Open the feature and add an example:
+
+
 
 ## Contributing
 
