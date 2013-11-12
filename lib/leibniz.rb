@@ -1,5 +1,4 @@
-require "leibniz/version"
-
+require 'leibniz/version'
 require 'kitchen'
 require 'forwardable'
 
@@ -22,6 +21,7 @@ module Leibniz
 
   def self.build(specification)
     loader = KitchenLoader.new(specification)
+
     config = Kitchen::Config.new(:loader => loader)
     Infrastructure.new(config.instances)
   end
@@ -75,19 +75,31 @@ module Leibniz
       @platforms = specification.hashes.map do |spec|
         create_platform(spec)
       end
+      @suites = specification.hashes.map do |spec|
+        create_suite(spec)
+      end
     end
 
     def read
       {
         :driver_plugin => "vagrant",
         :platforms => platforms,
-        :suites => [ { :name => "leibniz", :run_list => [] } ]
+        :suites => suites
       }
     end
 
     private
 
-    attr_reader :platforms
+    attr_reader :platforms, :suites
+
+    def create_suite(spec)
+      suite = Hash.new
+      suite[:name] = 'leibniz'
+      suite[:run_list] = []
+      suite[:data_bags_path] = 'test/integration/default/data_bags'
+      suite
+    end
+
 
     def create_platform(spec)
       distro = "#{spec['Operating System']}-#{spec['Version']}"

@@ -8,3 +8,4 @@
 - Demonstrate (and document) how to make Leibniz use the chef-zero provisioner
 - Provide a generator which creates the outline stuff
 - It'd be nice to be able to run the cucumber test and skip the teardown and setup process
+- It'd be ace if we could not have to install chef each time (but that might mean a backed image)
