@@ -11,3 +11,12 @@ Feature: Add Leibniz testing to an existing project
       leibniz init
     """
     And the exit status should be 0
+
+  Scenario: Running leibniz init within a project
+    When I run `leibniz init`
+    Then the exit status should be 0
+    And a directory named ".leibniz" should exist
+    And a directory named "features/support" should exist
+    And a directory named "features/step_definitions" should exist
+    And the file ".gitignore" should contain ".leibniz/"
+    
