@@ -1,0 +1,25 @@
+#!/usr/bin/env ruby
+
+require 'thor'
+require 'leibniz'
+
+# Trap interrupts to quit cleanly. See
+# https://twitter.com/mitchellh/status/283014103189053442
+Signal.trap("INT") { exit 1 }
+
+class LeibnizCli < Thor
+  include Thor::Actions
+
+  desc 'init', 'Set up a project ready for Leibniz Acceptance Testing'
+  def init
+    puts 'Create your features directory; Create your first feature.'
+  end
+  
+  desc "version", "Print Leibniz's version information"
+    def version
+      say "Leibniz version #{Leibniz::VERSION}"
+    end
+    map %w(-v --version) => :version
+end
+
+LeibnizCli.start

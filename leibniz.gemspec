@@ -20,7 +20,9 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency "test-kitchen", "~> 1.0.0.alpha"
   spec.add_dependency "kitchen-vagrant"
+  spec.add_dependency "thor"
 
   spec.add_development_dependency "bundler", "~> 1.3"
+  spec.add_development_dependency 'aruba',     '~> 0.5'
   spec.add_development_dependency "rake"
 end
