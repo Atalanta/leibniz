@@ -1,7 +1,9 @@
 #!/usr/bin/env ruby
 
+$:.unshift File.join(File.dirname(__FILE__), %w{.. lib})
 require 'thor'
 require 'leibniz'
+require 'pathname'
 
 # Trap interrupts to quit cleanly. See
 # https://twitter.com/mitchellh/status/283014103189053442
@@ -12,7 +14,10 @@ class LeibnizCli < Thor
 
   desc 'init', 'Set up a project ready for Leibniz Acceptance Testing'
   def init
-    say 'Create your features directory; Create your first feature.'
+    set_template_root
+    create_leibniz_yaml
+    create_skeleton_feature
+    append_to_gitignore(".leibniz/")
   end
   
   desc "version", "Print Leibniz's version information"
@@ -20,6 +25,28 @@ class LeibnizCli < Thor
       say "Leibniz version #{Leibniz::VERSION}"
     end
     map %w(-v --version) => :version
+
+    private
+
+    def set_template_root
+      LeibnizCli.source_root Pathname.new(File.expand_path('../../templates', __FILE__))
+    end
+
+    def create_leibniz_yaml
+      empty_directory '.leibniz'
+    end
+
+    def create_skeleton_feature
+      directory 'features'
+    end
+
+    def append_to_gitignore(line)
+      create_file(".gitignore") unless File.exists?(File.join(destination_root, ".gitignore"))
+      if IO.readlines(File.join(destination_root, ".gitignore")).grep(%r{^#{line}}).empty?
+        append_to_file(".gitignore", "#{line}\n")
+      end
+    end
+    
 end
 
 LeibnizCli.start
