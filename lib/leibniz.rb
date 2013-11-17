@@ -113,7 +113,7 @@ module Leibniz
       platform[:driver_config][:network] = [["private_network", {:ip => ipaddress}]]
       platform[:driver_config][:require_chef_omnibus] = spec["Chef Version"] || true
       platform[:driver_config][:ipaddress] = ipaddress
-      platform[:run_list] = Array(spec["Run List"])
+      platform[:run_list] = spec["Run List"].split(",")
       platform
     end
   end
