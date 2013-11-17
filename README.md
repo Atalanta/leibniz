@@ -21,6 +21,12 @@ Or install it yourself as:
 
 ## Usage
 
+### The Leibniz CLI
+
+Since version 0.2.0, Leibniz provides a basic CLI which will create and populate an example Cucumber feature to get you started.  You can call this using:
+
+    leibniz init
+
 ### Getting Started
 
 Leibniz takes the view that acceptance testing of infrastructure
