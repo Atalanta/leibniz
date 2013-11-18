@@ -1,3 +1,5 @@
+[![Code Climate](https://codeclimate.com/github/Atalanta/leibniz.png)](https://codeclimate.com/github/Atalanta/leibniz)
+
 # Leibniz
 
 Leibniz is simple utility which provides the ability to launch
