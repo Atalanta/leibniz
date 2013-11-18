@@ -26,4 +26,4 @@ Feature: Add Leibniz testing to an existing project
     And a directory named "features/step_definitions" should exist
     And the file "features/step_definitions/learning_steps.rb" should contain "@infrastructure.converge"
     And the file ".gitignore" should contain ".leibniz/"
-    
+    And the file ".gitignore" should contain ".kitchen/"
