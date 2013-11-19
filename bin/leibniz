@@ -13,9 +13,10 @@ class LeibnizCli < Thor
   include Thor::Actions
 
   desc 'init', 'Set up a project ready for Leibniz Acceptance Testing'
+  option :driver, :default => 'vagrant'
   def init
     set_template_root
-    create_leibniz_yaml
+    create_leibniz_yaml(options[:driver])
     create_skeleton_feature
     append_to_gitignore(".leibniz/")
   end
@@ -32,8 +33,8 @@ class LeibnizCli < Thor
       LeibnizCli.source_root Pathname.new(File.expand_path('../../templates', __FILE__))
     end
 
-    def create_leibniz_yaml
-      empty_directory '.leibniz'
+    def create_leibniz_yaml(driver)
+      template '.leibniz.yml.erb', '.leibniz.yml', {:driver => driver} 
     end
 
     def create_skeleton_feature
