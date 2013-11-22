@@ -6,12 +6,12 @@ require 'leibniz/version'
 Gem::Specification.new do |spec|
   spec.name          = "leibniz"
   spec.version       = Leibniz::VERSION
-  spec.authors       = ["SNS"]
+  spec.authors       = ["Stephen Nelson-Smith"]
   spec.email         = ["stephen@atalanta-systems.com"]
-  spec.description   = %q{Integration Testing for Chef}
+  spec.description   = %q{Automated Infrastructure Acceptance Tests}
   spec.summary       = %q{Arguably Leibniz independently invented integration.}
-  spec.homepage      = ""
-  spec.license       = "Apache 2.0"
+  spec.homepage      = "http://leibniz.cc"
+  spec.license       = "MIT"
 
   spec.files         = `git ls-files`.split($/)
   spec.executables   = spec.files.grep(%r{^bin/}) { |f| File.basename(f) }
@@ -22,8 +22,11 @@ Gem::Specification.new do |spec|
   spec.add_dependency "kitchen-vagrant"
   spec.add_dependency "thor"
   spec.add_dependency "cucumber"
+  spec.add_dependency "chef", "> 11"
 
   spec.add_development_dependency "bundler", "~> 1.3"
   spec.add_development_dependency 'aruba',     '~> 0.5'
   spec.add_development_dependency "rake"
+  spec.add_development_dependency "pry"
+
 end
