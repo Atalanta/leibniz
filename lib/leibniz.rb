@@ -1,6 +1,8 @@
+require 'pry'
 require 'leibniz/version'
 require 'kitchen'
 require 'forwardable'
+require 'ipaddr'
 
 module Kitchen
   class Config
@@ -20,8 +22,8 @@ end
 module Leibniz
 
   def self.build(specification)
-    loader = KitchenLoader.new(specification)
-
+    leibniz_yaml = YAML.load_file(".leibniz.yml")
+    loader = KitchenLoader.new(specification, leibniz_yaml)
     config = Kitchen::Config.new(:loader => loader)
     Infrastructure.new(config.instances)
   end
@@ -70,8 +72,9 @@ module Leibniz
 
   class KitchenLoader
 
-    def initialize(specification)
-      @last_octet = 11
+    def initialize(specification, config)
+      @config = config
+      @last_octet = @config['last_octet']
       @platforms = specification.hashes.map do |spec|
         create_platform(spec)
       end
@@ -82,7 +85,7 @@ module Leibniz
 
     def read
       {
-        :driver_plugin => "vagrant",
+        :driver_plugin => @config['driver'],
         :platforms => platforms,
         :suites => suites
       }
@@ -94,17 +97,16 @@ module Leibniz
 
     def create_suite(spec)
       suite = Hash.new
-      suite[:name] = 'leibniz'
-      suite[:run_list] = []
-      suite[:data_bags_path] = 'test/integration/default/data_bags'
+      suite[:name] = @config['suites'].first['name']
+      suite[:run_list] = @config['suites'].first['run_list']
+      suite[:data_bags_path] = @config['suites'].first['data_bags_path']
       suite
     end
 
 
     def create_platform(spec)
       distro = "#{spec['Operating System']}-#{spec['Version']}"
-      ipaddress = "10.2.3.#{@last_octet}"
-      @last_octet += 1
+      ipaddress = IPAddr.new(@config['network']).succ.to_s
       platform = Hash.new
       platform[:name] = spec["Server Name"]
       platform[:driver_config] = Hash.new
