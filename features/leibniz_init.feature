@@ -12,7 +12,6 @@ Feature: Add Leibniz testing to an existing project
     """
     And the exit status should be 0
 
-  @announce
   Scenario: Running leibniz init within a project
     When I run `leibniz init`
     Then the exit status should be 0
@@ -21,10 +20,10 @@ Feature: Add Leibniz testing to an existing project
     ---
     driver: vagrant
     network: 10.2.3.0/24
-    last_octet: 11
-    suite: leibniz
+    suites:
+    - name: leibniz
       run_list: []
-      data_bags_path: test/integration/default/data_bags
+      data_bags_path: "test/integration/default/data_bags"
     """
     And a directory named "features/support" should exist
     And the file "features/support/env.rb" should contain "require 'leibniz'"
@@ -36,16 +35,13 @@ Feature: Add Leibniz testing to an existing project
     And the file "features/step_definitions/learning_steps.rb" should contain "@infrastructure.converge"
     And the file ".gitignore" should contain ".leibniz/"
 
-  @announce
   Scenario: Specifying the dummy driver when running leibniz init
     When I run `leibniz init --driver dummy`
     Then the exit status should be 0
     And the file ".leibniz.yml" should contain "driver: dummy"
 
-  @announce
   Scenario: Using the dummy driver
-    Given I elect to use the "dummy" driver
-    And I have a wrapper cookbook called "leibniz"
-    When I run `cucumber`
-    Then the file ".kitchen/logs/leibniz-default.log" should contain "Dummy"
-    
+    Given I have a wrapper cookbook called "leibniz"
+    And I elect to use the "dummy" driver
+    When I successfully run `cucumber`
+    Then the file ".kitchen/logs/leibniz-learning.log" should match /Dummy..Create on instance.+id=>"leibniz-learning-\d+"}/

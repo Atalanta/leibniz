@@ -19,6 +19,7 @@ class LeibnizCli < Thor
     create_leibniz_yaml(options[:driver])
     create_skeleton_feature
     append_to_gitignore(".leibniz/")
+    append_to_gitignore(".kitchen/")
   end
   
   desc "version", "Print Leibniz's version information"
