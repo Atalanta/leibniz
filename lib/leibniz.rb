@@ -110,7 +110,7 @@ module Leibniz
       platform[:name] = spec["Server Name"]
       platform[:driver_config] = Hash.new
       platform[:driver_config][:box] = "opscode-#{distro}"
-      platform[:driver_config][:box_url] = "https://opscode-vm.s3.amazonaws.com/vagrant/opscode_#{distro}_provisionerless.box"
+      platform[:driver_config][:box_url] = "https://opscode-vm-bento.s3.amazonaws.com/vagrant/opscode_#{distro}_provisionerless.box"
       platform[:driver_config][:network] = [["private_network", {:ip => ipaddress}]]
       platform[:driver_config][:require_chef_omnibus] = spec["Chef Version"] || true
       platform[:driver_config][:ipaddress] = ipaddress
