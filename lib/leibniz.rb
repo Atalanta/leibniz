@@ -6,15 +6,14 @@ require 'ipaddr'
 
 module Kitchen
   class Config
-    def new_instance_logger(index)
-      level = Util.to_logger_level(self.log_level)
-
-      lambda do |name|
-        logfile = File.join(log_root, "#{name}.log")
-
-        Logger.new(:logdev => logfile,
-          :level => level, :progname => name)
-      end
+    def new_logger(suite, platform, index)
+      name = instance_name(suite, platform)
+      Logger.new(
+                 :color    => Color::COLORS[index % Color::COLORS.size].to_sym,
+                 :logdev   => File.join(log_root, "#{name}.log"),
+                 :level    => Util.to_logger_level(self.log_level),
+                 :progname => name
+                 )
     end
   end
 end
@@ -106,7 +105,7 @@ module Leibniz
 
     def create_platform(spec)
       distro = "#{spec['Operating System']}-#{spec['Version']}"
-      ipaddress = IPAddr.new(@config['network']).succ.to_s
+      ipaddress = IPAddr.new(@config['network']).succ.succ.to_s
       platform = Hash.new
       platform[:name] = spec["Server Name"]
       platform[:driver_config] = Hash.new
