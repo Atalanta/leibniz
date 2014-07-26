@@ -104,7 +104,7 @@ This background section is responsible for provisioning infrastructure and getti
 - `Chef Version` - this is the version of the Chef 'client' software to be installed.
 - `Run List` - this is the Chef run list which will be used when the node is converged.
 
-These two steps are satisfied by Leibniz.  We need to ensure the Leibniz library is available to Chef.  To do this, add `leibniz` to your Gemfile. We will also be needing `rspec-expectations` so this should be added to your GemFile aswell.  Now, run `bundle install`.  Finally, create a `support` directory under your `features` directory, and within the `support` directory, create an `env.rb` file.  This should read:
+These two steps are satisfied by Leibniz.  We need to ensure the Leibniz library is available to Chef.  To do this, add `leibniz` to your Gemfile. We will also be needing `rspec-expectations` so this should be added to your Gemfile aswell.  Now, run `bundle install`.  Finally, create a `support` directory under your `features` directory, and within the `support` directory, create an `env.rb` file.  This should read:
 
 ```
 require 'leibniz'
