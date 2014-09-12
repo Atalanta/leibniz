@@ -24,6 +24,7 @@ module Leibniz
     leibniz_yaml = YAML.load_file(".leibniz.yml")
     loader = KitchenLoader.new(specification, leibniz_yaml)
     config = Kitchen::Config.new(:loader => loader)
+    binding.pry
     Infrastructure.new(config.instances)
   end
 
@@ -108,12 +109,16 @@ module Leibniz
       ipaddress = IPAddr.new(@config['network']).succ.succ.to_s
       platform = Hash.new
       platform[:name] = spec["Server Name"]
-      platform[:driver_config] = Hash.new
-      platform[:driver_config][:box] = "opscode-#{distro}"
-      platform[:driver_config][:box_url] = "https://opscode-vm-bento.s3.amazonaws.com/vagrant/opscode_#{distro}_provisionerless.box"
-      platform[:driver_config][:network] = [["private_network", {:ip => ipaddress}]]
-      platform[:driver_config][:require_chef_omnibus] = spec["Chef Version"] || true
-      platform[:driver_config][:ipaddress] = ipaddress
+      platform[:driver] = Hash.new
+      platform[:driver][:box] = "opscode-#{distro}"
+      platform[:driver][:box_url] = "https://opscode-vm-bento.s3.amazonaws.com/vagrant/opscode_#{distro}_provisionerless.box"
+      platform[:driver][:network] = [["private_network", {:ip => ipaddress}]]
+      platform[:driver][:require_chef_omnibus] = spec["Chef Version"] || true
+      platform[:driver][:ipaddress] = ipaddress
+      platform[:driver][:binary] = '/usr/bin/docker'
+      platform[:driver][:use_sudo] = false
+      platform[:driver][:platform] = 'centos'
+      platform[:driver][:image] = 'centos:centos6'
       platform[:run_list] = spec["Run List"].split(",")
       platform
     end
